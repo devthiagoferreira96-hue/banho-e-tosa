@@ -1,0 +1,457 @@
+<!doctype html>
+<!-- Banho e Tosa v3 (mudar este número a cada versão força o celular a pegar a página e as regras de segurança novas) -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Banho e Tosa</title>
+<!-- App instalável (celular e computador) -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0D6E78">
+<link rel="icon" type="image/png" sizes="32x32" href="icones/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icones/favicon-64.png">
+<link rel="apple-touch-icon" href="icones/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Banho e Tosa">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<section id="tela-login" class="login" hidden>
+  <form id="form-login" class="login-card" autocomplete="on">
+    <div class="marca marca-login"><span class="marca-icone marca-logo" aria-hidden="true"><img src="icones/icone-192.png" alt="" width="64" height="64"></span><div><h1 class="nome-sistema">Banho e Tosa</h1><p class="marca-clinica">Banho e Tosa</p></div></div>
+    <p class="login-sub">Entre com o seu e-mail e senha.</p>
+    <label>E-mail<input id="login-email" type="email" required autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="120"></label>
+    <label>Senha<input id="login-senha" type="password" required autocomplete="current-password"></label>
+    <button type="submit" class="btn btn-primario btn-largo">Entrar</button>
+    <button type="button" id="btn-esqueci" class="link-btn">Esqueci minha senha</button>
+    <p id="login-erro" class="erro-texto" role="alert"></p>
+  </form>
+</section>
+
+<!-- ============ SISTEMA ============ -->
+<section id="tela-app" hidden>
+  <header class="topo">
+    <div class="marca">
+      <span class="marca-icone marca-logo" aria-hidden="true"><img src="icones/icone-192.png" alt="" width="36" height="36"></span>
+      <span class="nome-sistema">Banho e Tosa</span>
+    </div>
+    <nav class="abas" role="tablist">
+      <button class="aba ativa" role="tab" data-aba="agenda" aria-selected="true">Agenda<span class="txt-longo">mentos</span></button>
+      <button class="aba aba-celular" role="tab" data-aba="passeio" aria-selected="false" id="aba-btn-passeio">Passeio</button>
+      <button class="aba" role="tab" data-aba="fechamento" aria-selected="false">Caixa<span class="txt-longo"> / Fechamento</span></button>
+      <button class="aba" role="tab" data-aba="graficos" aria-selected="false">Gráficos</button>
+      <button class="aba" role="tab" data-aba="historico" aria-selected="false" id="aba-btn-historico" hidden>Histórico</button>
+    </nav>
+    <div class="usuario">
+      <span id="usuario-nome" class="selo"></span>
+      <span id="status-conexao" class="conexao" title="Atualização em tempo real"></span>
+      <button id="btn-sair" class="btn btn-fantasma">Sair</button>
+    </div>
+  </header>
+
+  <!-- ---------- ABA AGENDAMENTOS ---------- -->
+  <main id="aba-agenda" class="aba-conteudo">
+    <div class="grade">
+
+      <!-- Formulário -->
+      <section class="painel painel-form">
+        <div class="painel-titulo">
+          <h2 id="form-titulo">Novo agendamento</h2>
+          <button id="btn-limpar" type="button" class="btn btn-fantasma btn-pequeno">Limpar</button>
+        </div>
+        <form id="form-agendamento" novalidate>
+          <input type="hidden" id="f-id">
+          <input type="hidden" id="f-pet-id">
+
+          <!-- Cliente já cadastrado: busca e preenche tudo sozinho -->
+          <div class="cliente-busca" id="bloco-cliente">
+            <label for="f-cliente" class="rotulo">Cliente cadastrado</label>
+            <div class="cliente-campo">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              <input id="f-cliente" type="search" placeholder="Celular, tutor ou pet" maxlength="60" autocomplete="off"
+                     role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cliente-lista">
+              <ul id="cliente-lista" class="cliente-lista" role="listbox" aria-label="Clientes encontrados" hidden></ul>
+            </div>
+            <div id="ficha-pet" class="ficha-pet" aria-live="polite" hidden></div>
+          </div>
+
+          <div class="linha linha-data">
+            <label class="obrig"><span>Data <span class="ast" aria-hidden="true">*</span></span><span class="data-cal"><input id="f-data" inputmode="numeric" placeholder="DD/MM/AAAA" maxlength="10" required><button type="button" id="btn-calendario" class="btn-cal" title="Abrir calendário" aria-label="Abrir calendário" aria-haspopup="dialog" aria-expanded="false" aria-controls="calendario"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M7.5 13.5h2M11 13.5h2M14.5 13.5h2M7.5 17h2M11 17h2"/></svg></button></span></label>
+            <label class="obrig"><span>Horário <span class="ast" aria-hidden="true">*</span></span><input id="f-horario" inputmode="numeric" placeholder="HH:MM" maxlength="5" required></label>
+            <div id="calendario" class="calendario" role="dialog" aria-label="Escolher data" hidden></div>
+          </div>
+          <div id="sugestoes" class="sugestoes" aria-live="polite"></div>
+
+          <fieldset>
+            <legend>Tutor</legend>
+            <label class="obrig"><span>Nome do tutor <span class="ast" aria-hidden="true">*</span></span><input id="f-tutor" required maxlength="100" autocomplete="off"></label>
+            <label>Telefone / WhatsApp<input id="f-telefone" inputmode="tel" placeholder="(00) 00000-0000" maxlength="15"></label>
+
+            <!-- Leva e traz: a empresa busca e/ou entrega o pet em casa -->
+            <div class="campo">
+              <span class="rotulo" id="rot-transporte">Leva e traz</span>
+              <div class="opcoes opcoes-grandes opcoes-transporte" role="group" aria-labelledby="rot-transporte">
+                <label class="opcao"><input type="checkbox" id="f-busca"> Buscar o pet em casa</label>
+                <label class="opcao"><input type="checkbox" id="f-entrega"> Entregar o pet em casa</label>
+              </div>
+              <p class="dica-transporte" id="dica-transporte">Sem marcar nenhuma opção: o tutor traz e busca o pet.</p>
+              <label class="opcao opcao-outro" id="ctl-outro-end" hidden><input type="checkbox" id="f-outro-end"> Entregar em outro endereço</label>
+            </div>
+
+            <div id="bloco-endereco" class="bloco-endereco" hidden>
+              <p class="titulo-endereco" id="tit-end-busca">Endereço</p>
+              <div class="linha linha-cep">
+                <label>CEP<input id="f-cep" inputmode="numeric" placeholder="00000-000" maxlength="9" autocomplete="postal-code"></label>
+                <span id="cep-status" class="cep-status" aria-live="polite"></span>
+              </div>
+              <div class="linha linha-rua">
+                <label class="obrig"><span>Rua <span class="ast" aria-hidden="true">*</span></span><input id="f-rua" maxlength="120" autocomplete="address-line1"></label>
+                <label class="obrig"><span>Número <span class="ast" aria-hidden="true">*</span></span><input id="f-numero" maxlength="10"></label>
+              </div>
+              <div class="linha">
+                <label>Bairro<input id="f-bairro" maxlength="120"></label>
+                <label>Cidade<input id="f-cidade" maxlength="120"></label>
+              </div>
+              <label>Ponto de referência / lembrete<textarea id="f-referencia" rows="2" maxlength="500"
+                placeholder="Ex.: casa de portão azul, ao lado da padaria; tocar a campainha"></textarea></label>
+            </div>
+
+            <!-- Endereço de entrega diferente do de busca -->
+            <div id="bloco-endereco-entrega" class="bloco-endereco bloco-entrega" hidden>
+              <p class="titulo-endereco">Endereço de entrega</p>
+              <div class="linha linha-cep">
+                <label>CEP<input id="f-ent-cep" inputmode="numeric" placeholder="00000-000" maxlength="9" autocomplete="off"></label>
+                <span id="cep-status-ent" class="cep-status" aria-live="polite"></span>
+              </div>
+              <div class="linha linha-rua">
+                <label class="obrig"><span>Rua <span class="ast" aria-hidden="true">*</span></span><input id="f-ent-rua" maxlength="120" autocomplete="off"></label>
+                <label class="obrig"><span>Número <span class="ast" aria-hidden="true">*</span></span><input id="f-ent-numero" maxlength="10"></label>
+              </div>
+              <div class="linha">
+                <label>Bairro<input id="f-ent-bairro" maxlength="120"></label>
+                <label>Cidade<input id="f-ent-cidade" maxlength="120"></label>
+              </div>
+              <label>Ponto de referência / lembrete<textarea id="f-ent-referencia" rows="2" maxlength="500"
+                placeholder="Ex.: trabalho do tutor, falar com a recepção"></textarea></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Animal</legend>
+            <div class="linha linha-pet">
+              <label class="obrig"><span>Nome do animal <span class="ast" aria-hidden="true">*</span></span><input id="f-pet" required maxlength="50" autocomplete="off"></label>
+              <div class="campo">
+                <label for="f-idade" class="rotulo">Idade</label>
+                <div class="idade">
+                  <input id="f-idade" inputmode="numeric" maxlength="2" placeholder="Ex.: 3" aria-describedby="f-idade-un">
+                  <select id="f-idade-un" aria-label="Unidade da idade">
+                    <option value="anos">anos</option>
+                    <option value="meses">meses</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="campo">
+              <span class="rotulo">Espécie</span>
+              <div class="opcoes opcoes-grandes" role="radiogroup">
+                <label class="opcao"><input type="radio" name="f-especie" value="Canino"> Canino</label>
+                <label class="opcao"><input type="radio" name="f-especie" value="Felino"> Felino</label>
+              </div>
+            </div>
+            <div class="campo">
+              <span class="rotulo">Sexo</span>
+              <div class="opcoes opcoes-grandes" role="radiogroup">
+                <label class="opcao"><input type="radio" name="f-sexo" value="Macho"> Macho</label>
+                <label class="opcao"><input type="radio" name="f-sexo" value="Fêmea"> Fêmea</label>
+              </div>
+            </div>
+            <div class="campo">
+              <span class="rotulo">Porte <small class="rotulo-dica">(define o preço da tabela)</small></span>
+              <div class="opcoes opcoes-porte" role="radiogroup">
+                <label class="opcao"><input type="radio" name="f-porte" value="Pequeno"> Pequeno</label>
+                <label class="opcao"><input type="radio" name="f-porte" value="Médio"> Médio</label>
+                <label class="opcao"><input type="radio" name="f-porte" value="Grande"> Grande</label>
+              </div>
+            </div>
+
+            <label class="saude">
+              <span class="saude-titulo">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3 2 21h20L12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                Alergias ou problemas de saúde
+              </span>
+              <textarea id="f-saude" rows="3" maxlength="500" placeholder="Ex.: alergia a xampu com perfume, cardiopata, otite... (deixe em branco se não houver)"></textarea>
+            </label>
+          </fieldset>
+
+          <details class="opcionais">
+            <summary>Características (opcional)</summary>
+            <div class="linha">
+              <label>Peso (kg)<input id="f-peso" inputmode="decimal" placeholder="Ex.: 8,5" maxlength="6"></label>
+              <div class="campo raca-campo">
+                <label for="f-raca" class="rotulo">Raça</label>
+                <input id="f-raca" maxlength="120" autocomplete="off" role="combobox" aria-autocomplete="list"
+                       aria-expanded="false" aria-controls="lista-racas" placeholder="Escolha a espécie" disabled>
+                <ul id="lista-racas" class="lista-racas" role="listbox" hidden></ul>
+              </div>
+            </div>
+            <div class="campo">
+              <span class="rotulo">Pelo</span>
+              <div class="opcoes">
+                <label class="opcao"><input type="radio" name="f-pelagem" value="Curto"> Curto</label>
+                <label class="opcao"><input type="radio" name="f-pelagem" value="Longo"> Longo</label>
+              </div>
+            </div>
+            <label>Observações<textarea id="f-obs" rows="2" maxlength="500"></textarea></label>
+          </details>
+
+          <!-- Serviço, valor e pagamento -->
+          <fieldset class="servicos">
+            <legend>Serviço e valor</legend>
+            <div class="opcoes opcoes-servico" id="opcoes-servico" role="radiogroup" aria-label="Serviço"></div>
+            <label id="ctl-servico-outro" hidden>Qual serviço?<input id="f-servico-outro" maxlength="120" placeholder="Ex.: Corte de unhas, Banho medicamentoso"></label>
+            <label class="campo-valor">Valor do serviço
+              <span class="valor-wrap"><span class="valor-prefixo" aria-hidden="true">R$</span><input id="f-valor" inputmode="decimal" placeholder="0,00" maxlength="9" aria-label="Valor em reais" aria-describedby="valor-dica"></span>
+            </label>
+            <p class="dica-valor" id="valor-dica" aria-live="polite"></p>
+            <details class="ajuste">
+              <summary>Desconto ou acréscimo</summary>
+              <div class="linha">
+                <label>Desconto<span class="valor-wrap"><span class="valor-prefixo" aria-hidden="true">R$</span><input id="f-desconto" inputmode="decimal" placeholder="0,00" maxlength="9"></span></label>
+                <label>Acréscimo<span class="valor-wrap"><span class="valor-prefixo" aria-hidden="true">R$</span><input id="f-acrescimo" inputmode="decimal" placeholder="0,00" maxlength="9"></span></label>
+              </div>
+              <label>Motivo<input id="f-ajuste-motivo" maxlength="200" placeholder="Ex.: cliente fiel, pelo muito embolado"></label>
+            </details>
+            <p class="valor-total" id="valor-total" hidden></p>
+            <div class="campo">
+              <span class="rotulo">Pagamento <small class="rotulo-dica">(pode ser informado na entrega)</small></span>
+              <div class="opcoes opcoes-pagamento" id="f-pagamento-grupo" role="radiogroup" aria-label="Forma de pagamento"></div>
+            </div>
+            <p class="dica-transporte">O valor é obrigatório para finalizar o banho; a forma de pagamento, para entregar o pet.</p>
+          </fieldset>
+
+          <p id="form-erro" class="erro-texto" role="alert"></p>
+          <div class="acoes-form">
+            <button type="button" id="btn-cancelar-edicao" class="btn btn-fantasma" hidden>Cancelar edição</button>
+            <button type="submit" id="btn-salvar" class="btn btn-primario btn-largo">Salvar agendamento</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Agenda do dia -->
+      <section class="painel painel-agenda">
+        <!-- Busca em todas as datas -->
+        <div class="busca-agenda" role="search">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="busca-agenda" type="search" placeholder="Buscar pet, tutor ou telefone" maxlength="60" autocomplete="off" aria-label="Buscar pet, tutor ou telefone">
+          <button id="busca-limpar" class="busca-limpar" type="button" aria-label="Limpar busca" hidden>&times;</button>
+        </div>
+        <div class="agenda-topo">
+          <div class="navegador-data">
+            <div class="visao" role="group" aria-label="Visão da agenda">
+              <button class="chip ativo" data-visao="dia" aria-pressed="true">Dia</button>
+              <button class="chip" data-visao="semana" aria-pressed="false">Semana</button>
+            </div>
+            <button id="dia-anterior" class="btn btn-icone" aria-label="Anterior">&#8249;</button>
+            <input id="agenda-data" inputmode="numeric" maxlength="10" aria-label="Data da agenda">
+            <button id="dia-seguinte" class="btn btn-icone" aria-label="Seguinte">&#8250;</button>
+            <button id="dia-hoje" class="btn btn-fantasma btn-pequeno">Hoje</button>
+            <button id="btn-leva" class="btn btn-leva btn-pequeno" hidden>🚗 Leva e traz <span id="leva-qtd"></span></button>
+          </div>
+          <div class="filtros" role="group" aria-label="Filtrar">
+            <button class="chip ativo" data-filtro="ativos">Ativos</button>
+            <button class="chip" data-filtro="agendado">Agendados</button>
+            <button class="chip" data-filtro="em_banho">Em banho</button>
+            <button class="chip" data-filtro="finalizado">Finalizados</button>
+            <button class="chip" data-filtro="entregue">Entregues</button>
+            <button class="chip" data-filtro="cancelado">Cancelados</button>
+          </div>
+        </div>
+        <h2 id="agenda-titulo" class="agenda-titulo"></h2>
+        <div id="agenda-resumo" class="agenda-resumo"></div>
+        <p id="agenda-caixa" class="agenda-caixa" hidden></p>
+        <ol id="lista-agenda" class="lista"></ol>
+        <div id="semana-grade" class="semana-grade" hidden></div>
+        <div id="resultado-busca" class="resultado-busca" hidden></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ---------- ABA PASSEIO (só no celular): busca + leva e traz ---------- -->
+  <main id="aba-passeio" class="aba-conteudo" hidden>
+    <section class="painel painel-passeio">
+      <div id="passeio-busca-slot"></div>
+      <div class="passeio-dia">
+        <div class="navegador-data">
+          <button id="ps-anterior" class="btn btn-icone" aria-label="Dia anterior">&#8249;</button>
+          <span id="ps-data" class="ps-data"></span>
+          <button id="ps-seguinte" class="btn btn-icone" aria-label="Dia seguinte">&#8250;</button>
+          <button id="ps-hoje" class="btn btn-fantasma btn-pequeno">Hoje</button>
+        </div>
+        <h2 id="ps-titulo" class="agenda-titulo"></h2>
+        <p id="ps-resumo" class="nota"></p>
+      </div>
+      <div id="passeio-leva" class="leva-inline"></div>
+    </section>
+  </main>
+
+  <!-- ---------- ABA CAIXA / FECHAMENTO ---------- -->
+  <main id="aba-fechamento" class="aba-conteudo" hidden>
+    <section class="painel fc-painel">
+      <div class="graf-topo fc-topo nao-imprimir">
+        <h2>Caixa / Fechamento</h2>
+        <div class="filtros" role="group" aria-label="Ver">
+          <button class="chip ativo" data-fmodo="dia" aria-pressed="true">Dia</button>
+          <button class="chip" data-fmodo="mes" aria-pressed="false">Mês</button>
+          <button class="chip" data-fmodo="precos" aria-pressed="false">Tabela de preços</button>
+        </div>
+      </div>
+      <div id="fc-nav-dia" class="fc-nav nao-imprimir">
+        <div class="navegador-data">
+          <button id="fc-anterior" class="btn btn-icone" aria-label="Dia anterior">&#8249;</button>
+          <input id="fc-data" inputmode="numeric" maxlength="10" aria-label="Dia do caixa">
+          <button id="fc-seguinte" class="btn btn-icone" aria-label="Dia seguinte">&#8250;</button>
+          <button id="fc-hoje" class="btn btn-fantasma btn-pequeno">Hoje</button>
+        </div>
+        <h3 id="fc-titulo-dia" class="agenda-titulo"></h3>
+      </div>
+      <div id="fc-nav-mes" class="fc-nav graf-controles nao-imprimir" hidden>
+        <label class="inline">Mês <select id="fc-mes"></select></label>
+        <label class="inline">Ano <select id="fc-ano"></select></label>
+      </div>
+      <div id="fc-corpo" class="fc-corpo"></div>
+    </section>
+  </main>
+
+  <!-- ---------- ABA HISTÓRICO (só administrador) ---------- -->
+  <main id="aba-historico" class="aba-conteudo" hidden>
+    <section class="painel backup-painel">
+      <div class="backup-topo">
+        <div>
+          <h2>Backup e planilha</h2>
+          <p class="nota" id="backup-status">Exporte os agendamentos para uma planilha (abre no Excel e no Google Planilhas).</p>
+        </div>
+        <div class="backup-acoes">
+          <label class="inline">Período
+            <select id="bk-periodo">
+              <option value="mes">Este mês</option>
+              <option value="mes-anterior">Mês passado</option>
+              <option value="ano">Este ano</option>
+              <option value="tudo" selected>Tudo (backup completo)</option>
+            </select>
+          </label>
+          <button id="bk-exportar" class="btn btn-primario">Exportar planilha</button>
+          <button id="bk-historico" class="btn btn-fantasma">Exportar histórico</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="painel">
+      <div class="graf-topo">
+        <h2>Histórico de alterações</h2>
+        <div class="hist-filtros">
+          <label class="inline">Período
+            <select id="h-periodo">
+              <option value="1">Hoje</option>
+              <option value="7" selected>Últimos 7 dias</option>
+              <option value="30">Últimos 30 dias</option>
+              <option value="0">Tudo</option>
+            </select>
+          </label>
+          <label class="inline">Mostrar
+            <select id="h-acao">
+              <option value="">Tudo</option>
+              <option value="valor">💲 Mudanças de valor e pagamento</option>
+              <option value="apos">🔒 Mudanças após o fechamento</option>
+              <option value="tipo:caixa">Caixa (fechar / reabrir dia)</option>
+              <option value="tipo:despesa">Despesas e sangrias</option>
+              <option value="tipo:preco">Tabela de preços</option>
+              <option value="criado">Agendamentos criados</option>
+              <option value="alterado">Agendamentos alterados</option>
+              <option value="banho iniciado">Banho iniciado</option>
+              <option value="finalizado">Finalizados</option>
+              <option value="entregue">Entregues</option>
+              <option value="cancelado">Cancelados</option>
+              <option value="reativado">Reativados / reabertos</option>
+              <option value="tutor avisado">Tutor avisado</option>
+              <option value="excluido">Excluídos</option>
+            </select>
+          </label>
+          <input id="h-busca" type="search" placeholder="Pet, tutor ou descrição" maxlength="60" aria-label="Buscar no histórico">
+        </div>
+      </div>
+      <p class="nota">Tudo o que é criado, alterado, finalizado, entregue, cancelado ou excluído fica registrado aqui, com quem fez, quando e os valores em R$ daquele momento. Também entram as despesas, a tabela de preços e o fechamento do caixa. Só o administrador vê esta aba, e ninguém consegue apagar o histórico.</p>
+      <div id="hist-lista" class="hist-lista"></div>
+      <div class="hist-mais"><button id="h-mais" class="btn btn-fantasma" hidden>Carregar mais</button></div>
+    </section>
+  </main>
+
+  <!-- ---------- ABA GRÁFICOS ---------- -->
+  <main id="aba-graficos" class="aba-conteudo" hidden>
+    <section class="painel">
+      <div class="graf-topo">
+        <h2>Gráficos de entradas</h2>
+        <div class="graf-controles">
+          <div class="filtros" role="group" aria-label="Agrupar por">
+            <button class="chip ativo" data-agrupar="dia">Dias</button>
+            <button class="chip" data-agrupar="mes">Meses</button>
+            <button class="chip" data-agrupar="ano">Anos</button>
+          </div>
+          <label class="inline" id="ctl-mes">Mês
+            <select id="g-mes"></select>
+          </label>
+          <label class="inline" id="ctl-ano">Ano
+            <select id="g-ano"></select>
+          </label>
+        </div>
+      </div>
+      <div class="filtros graf-modo" role="group" aria-label="Colunas">
+        <button class="chip ativo" data-gmodo="status" aria-pressed="true">Registrados × finalizados</button>
+        <button class="chip" data-gmodo="servico" aria-pressed="false">Por serviço</button>
+        <button class="chip" data-gmodo="valor" aria-pressed="false">Faturamento (R$)</button>
+      </div>
+      <p class="nota">Somente visualização. Cancelados não entram. Os cadastros do usuário Teste não entram nos números.</p>
+      <div id="graf-cartoes" class="cartoes"></div>
+      <div class="graf-area"><canvas id="grafico" aria-label="Gráfico de entradas" role="img"></canvas></div>
+      <div id="graf-legenda" class="graf-legenda"></div>
+      <div class="tab-topo">
+        <h3>Detalhamento</h3>
+        <label class="tab-zeros" id="ctl-zeros"><input type="checkbox" id="g-zeros"> <span id="g-zeros-txt">Mostrar dias sem movimento</span></label>
+      </div>
+      <div class="tabela-rolagem"><table id="graf-tabela" class="tabela tabela-graf"></table></div>
+      <div id="graf-lista" class="graf-lista"></div>
+    </section>
+  </main>
+</section>
+
+<!-- ============ AVISOS ============ -->
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+  <div class="modal-caixa">
+    <h3 id="modal-titulo"></h3>
+    <p id="modal-texto"></p>
+    <div id="modal-extra" class="modal-extra"></div>
+    <div id="modal-acoes" class="modal-acoes"></div>
+  </div>
+</div>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<!-- Painel "Leva e traz do dia" -->
+<div id="painel-leva" class="leva-fundo" hidden>
+  <aside class="leva-painel" role="dialog" aria-modal="true" aria-labelledby="leva-titulo">
+    <div class="leva-cab"><div><h3 id="leva-titulo">Leva e traz do dia</h3><p id="leva-sub" class="nota"></p></div>
+      <button id="leva-fechar" class="btn btn-fantasma btn-pequeno" aria-label="Fechar">Fechar ✕</button></div>
+    <div id="leva-corpo"></div>
+  </aside>
+</div>
+
+<script src="config.js?v=4"></script>
+<script src="vendor/supabase.js"></script>
+<script src="racas.js?v=4"></script>
+<script src="app.js?v=4"></script>
+<script src="registrar-app.js?v=4"></script>
+</body>
+</html>

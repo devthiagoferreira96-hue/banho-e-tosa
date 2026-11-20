@@ -1,0 +1,7 @@
+Esta pasta guarda as duas bibliotecas que o sistema usa, para não depender de site externo.
+Ela precisa ter estes 2 arquivos:
+
+  supabase.js      (Supabase 2.45.4)  -> COPIE da pasta vendor do Agenda Pet (é o mesmo arquivo)
+  chart.umd.js     (Chart.js 4.4.1)   -> já vem no zip
+
+Sem o supabase.js o sistema não abre. Veja o LEIAME.md, parte "Bibliotecas".
